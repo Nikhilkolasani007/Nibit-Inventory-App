@@ -1,75 +1,355 @@
-# 📦 Inventory App
+# 📦 Nibit Inventory
 
-> A modern, full-featured Inventory Management mobile application built with **Expo React Native** and a **PHP REST API** backend — designed for mobile phone & electronics shops.
+<p align="center">
+  <strong>Modern Inventory Management for Mobile & Electronics Businesses</strong>
+</p>
+
+<p align="center">
+  Built with <strong>Expo React Native</strong> + <strong>PHP REST API</strong>
+</p>
+
+<p align="center">
+
+![Expo](https://img.shields.io/badge/Expo-57-000020?logo=expo\&logoColor=white)
+![React Native](https://img.shields.io/badge/React%20Native-0.86-61DAFB?logo=react\&logoColor=black)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES2023-F7DF1E?logo=javascript\&logoColor=black)
+![PHP](https://img.shields.io/badge/PHP-7.4%2B-777BB4?logo=php\&logoColor=white)
+![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20MySQL-003B57)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+</p>
+
+<p align="center">
+
+<a href="#-features">Features</a> • <a href="#-screens">Screens</a> • <a href="#-architecture">Architecture</a> • <a href="#-installation">Installation</a> • <a href="#-api">API</a> • <a href="#-build">Build</a>
+
+</p>
 
 ---
 
-## ✨ Features at a Glance
+## 🚀 About
 
-| Module | Highlights |
-|---|---|
-| 🔐 **Auth & Security** | Email/password login · Employee ID login · PIN lock screen · Biometric unlock |
-| 🏠 **Home Dashboard** | Real-time stock summary · Low stock alerts · Recent activity feed |
-| 📦 **Inventory** | Full product catalog · IMEI tracking · First Hand / Second Hand condition tagging · Search by name, SKU, IMEI, distributor, seller |
-| 🛒 **POS / Sales** | Point-of-sale screen · Record sales · Auto stock deduction |
-| 💰 **Finance** | Profit & loss summary · Transaction history · Analytics |
-| 📊 **Analytics** | Category-wise distribution · Stock valuation · Estimated margin |
-| ⚙️ **Account & Settings** | PIN change · Server URL config · Logout · App lock |
-| 🌐 **Backend Sync** | Live PHP REST API sync with offline-first fallback |
-| 📷 **Image Upload** | Product photo upload via camera or gallery |
-| 🧾 **Invoices** | Create, view, and delete invoices |
-| 🗑️ **Recycle Bin** | Restore or permanently delete removed items |
+**Nibit Inventory** is a modern mobile inventory management application designed for **mobile phone, electronics, and small retail businesses**.
+
+The application provides inventory management, IMEI tracking, point-of-sale functionality, financial analytics, invoices, stock management, authentication, image uploads, and backend synchronization.
+
+The mobile application is built with **Expo React Native**, while the backend uses a **PHP REST API** connected to SQLite or MySQL.
 
 ---
 
-## 🏛️ Architecture
+## ✨ Features
 
+<table>
+<tr>
+<td width="50%">
+
+### 🔐 Authentication
+
+* Email & password login
+* Employee ID login
+* PIN lock
+* Biometric unlock
+* Persistent sessions
+
+</td>
+<td width="50%">
+
+### 📦 Inventory
+
+* Product catalog
+* IMEI tracking
+* First / Second Hand classification
+* Stock management
+* Search & filtering
+* Low-stock alerts
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### 🛒 POS / Sales
+
+* Point-of-sale interface
+* Record sales
+* Automatic stock deduction
+* Customer information
+* Transaction history
+
+</td>
+<td>
+
+### 💰 Finance
+
+* Profit & Loss
+* Transaction history
+* Stock valuation
+* Margin calculations
+* Financial analytics
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### 📊 Analytics
+
+* Category distribution
+* Stock statistics
+* Estimated margins
+* Dashboard metrics
+* Low-stock monitoring
+
+</td>
+<td>
+
+### 🧾 Invoices
+
+* Create invoices
+* View invoices
+* Delete invoices
+* Export / printing support
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+### 📷 Product Images
+
+* Camera support
+* Gallery selection
+* Product image uploads
+* Backend image storage
+
+</td>
+<td>
+
+### 🗑️ Recycle Bin
+
+* Deleted item recovery
+* Restore products
+* Permanent deletion
+* Empty recycle bin
+
+</td>
+</tr>
+</table>
+
+---
+
+# 📱 Screens
+
+## 🔐 Login
+
+Secure login screen supporting:
+
+* Admin authentication
+* Employee authentication
+* Backend server configuration
+
+---
+
+## 🏠 Dashboard
+
+The dashboard provides a quick overview of:
+
+* Total inventory
+* Inventory value
+* Low-stock products
+* Out-of-stock products
+* Recent transactions
+
+---
+
+## 📦 Inventory
+
+Manage your complete product catalog.
+
+### Product information
+
+| Field         | Description                  |
+| ------------- | ---------------------------- |
+| Product Name  | Name of the product          |
+| SKU           | Unique stock identifier      |
+| IMEI          | Device IMEI                  |
+| Category      | Mobile / Accessories / Other |
+| Condition     | First Hand / Second Hand     |
+| Quantity      | Available stock              |
+| Cost Price    | Purchase price               |
+| Selling Price | Retail price                 |
+| Minimum Stock | Alert threshold              |
+| Distributor   | Supplier information         |
+| Seller        | Second-hand seller           |
+| Location      | Shelf / warehouse            |
+| Photo         | Product image                |
+
+---
+
+## 🛒 Point of Sale
+
+Process sales directly from the application.
+
+**Sale flow:**
+
+```text
+Select Product
+      ↓
+Enter Quantity
+      ↓
+Customer Details
+      ↓
+Confirm Sale
+      ↓
+Stock Automatically Deducted
+      ↓
+Transaction Recorded
 ```
-┌────────────────────────────────────────┐
-│     Mobile App (Expo / React Native)   │
-│                                        │
-│  LoginScreen → PinLockScreen → App     │
-│  ┌─────────┬──────────┬──────┬──────┐  │
-│  │  Home   │Inventory │ POS  │Finance│  │
-│  └─────────┴──────────┴──────┴──────┘  │
-└────────────────┬───────────────────────┘
-                 │ HTTPS / JSON REST API
-                 ▼
-┌────────────────────────────────────────┐
-│         PHP REST API Backend           │
-│  api.php · items.php · auth.php        │
-│  transactions.php · stats.php · etc.   │
-└────────────────┬───────────────────────┘
-                 │
-                 ▼
-┌────────────────────────────────────────┐
-│     Database (SQLite or MySQL)         │
-└────────────────────────────────────────┘
+
+---
+
+## 💰 Finance
+
+Monitor your business finances with:
+
+* Sales history
+* Stock movement
+* Cost price
+* Selling price
+* Profit
+* Estimated margins
+* Transaction analytics
+
+---
+
+# 🏗️ Architecture
+
+```text
+┌──────────────────────────────────────────┐
+│          📱 Nibit Inventory              │
+│                                          │
+│        Expo React Native App             │
+│                                          │
+│  Login │ Home │ Inventory │ POS │ Finance│
+└──────────────────┬───────────────────────┘
+                   │
+                   │ HTTPS / JSON
+                   ▼
+┌──────────────────────────────────────────┐
+│             🌐 REST API                  │
+│                                          │
+│                PHP                       │
+│                                          │
+│ api.php │ auth.php │ items.php           │
+│ stats.php │ categories.php               │
+│ transactions.php │ users.php             │
+└──────────────────┬───────────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────────┐
+│             🗄️ Database                 │
+│                                          │
+│        SQLite / MySQL                    │
+└──────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quick Start
+# 🛠️ Tech Stack
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18+)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/) — `npm install -g expo-cli`
-- A PHP server (XAMPP, Laragon, or any host with PHP 7.4+)
-- Android device or emulator (or iOS on Mac)
+| Layer        | Technology                |
+| ------------ | ------------------------- |
+| Mobile       | Expo React Native         |
+| React Native | 0.86                      |
+| Expo         | SDK 57                    |
+| Language     | JavaScript ES2023         |
+| Icons        | Expo Vector Icons         |
+| Storage      | AsyncStorage              |
+| Camera       | Expo Image Picker         |
+| Biometrics   | Expo Local Authentication |
+| File System  | Expo File System          |
+| Printing     | Expo Print                |
+| Sharing      | Expo Sharing              |
+| Backend      | PHP 7.4+                  |
+| API          | REST / JSON               |
+| Database     | SQLite / MySQL            |
+| Build        | Expo EAS                  |
 
 ---
 
-### Step 1 — Clone the Repository
+# 📁 Project Structure
+
+```text
+Nibit-Inventory-App/
+│
+├── App.js
+├── app.json
+├── eas.json
+├── index.js
+├── package.json
+│
+├── assets/
+│   ├── icon.png
+│   ├── splash-icon.png
+│   └── favicon.png
+│
+├── api/
+│   ├── api.php
+│   ├── auth.php
+│   ├── items.php
+│   ├── categories.php
+│   ├── transactions.php
+│   ├── stats.php
+│   ├── users.php
+│   └── db.php
+│
+└── src/
+    │
+    ├── components/
+    │   ├── LoginScreen.js
+    │   ├── PinLockScreen.js
+    │   ├── Header.js
+    │   ├── HomeView.js
+    │   ├── InventoryItemCard.js
+    │   ├── ItemModal.js
+    │   ├── StockAdjustmentModal.js
+    │   ├── StatsOverview.js
+    │   ├── PosView.js
+    │   ├── FinanceView.js
+    │   ├── AnalyticsView.js
+    │   ├── AccountView.js
+    │   ├── TransactionsList.js
+    │   ├── BarcodeScannerModal.js
+    │   └── SettingsModal.js
+    │
+    ├── services/
+    │   ├── apiService.js
+    │   └── sessionService.js
+    │
+    └── data/
+        └── initialData.js
+```
+
+---
+
+# ⚡ Installation
+
+## 1️⃣ Clone
 
 ```bash
-git clone https://github.com/your-username/inventory-app.git
-cd inventory-app
+git clone https://github.com/Nikhilkolasani007/Nibit-Inventory-App.git
+```
+
+```bash
+cd Nibit-Inventory-App
 ```
 
 ---
 
-### Step 2 — Install Dependencies
+## 2️⃣ Install dependencies
 
 ```bash
 npm install
@@ -77,179 +357,159 @@ npm install
 
 ---
 
-### Step 3 — Start the PHP Backend
-
-Open a terminal in the project root and run the PHP built-in server:
-
-```bash
-php -S localhost:8000 -t api/
-```
-
-> **Using XAMPP?** Copy the `api/` folder into your XAMPP `htdocs/` directory and start Apache.
-
-The backend will automatically create the SQLite database and seed initial tables (`items`, `categories`, `transactions`, `users`) on the very first request.
-
----
-
-### Step 4 — Start the Expo App
-
-Open a second terminal:
+## 3️⃣ Start Expo
 
 ```bash
 npm start
 ```
 
-Then press:
-- **`a`** — open on Android emulator / device
-- **`i`** — open on iOS simulator (Mac only)
-- **`w`** — open in web browser
+Then choose:
 
-> **On a physical Android device?** Scan the QR code with the **Expo Go** app ([Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent)).
+```text
+a → Android
+i → iOS
+w → Web
+```
 
----
-
-## 📱 App Screens & Usage
-
-### 🔐 Login Screen
-Enter your **Email**, **Password**, and optionally your **Shop Website URL** to connect to your PHP backend. Supports both:
-- **Admin Login** — Email + Password
-- **Employee Login** — Employee ID + 4-digit code
-
-### 🔒 PIN Lock Screen
-After login, your session is saved locally. On the next app launch, you will be prompted with a UPI-style **4-digit PIN lock screen** instead of the full login flow. Supports **biometric (fingerprint/face)** unlock if available on the device.
-
-### 🏠 Home Tab
-- Overview cards: Total Items, Total Value, Low Stock Count, Out of Stock Count.
-- Quick links to navigate to Inventory, POS, and Finance tabs.
-- Recent transaction activity feed.
-
-### 📦 Inventory Tab
-The core product catalog. Features:
-- **Search** by product name, SKU, IMEI, distributor, seller name, seller phone, or date.
-- **Category filter pills** — tap a category to filter by it.
-- **Condition filter** — toggle between `All Conditions`, `First Hand`, `Second Hand`.
-- **Stock status filter** — view All, Low Stock, or Out of Stock items.
-- **Quick +/- steppers** on each item card for rapid stock in/out.
-- **Advanced Stock Modal** — enter a specific quantity with a reason (Stock In, Stock Out, Adjustment).
-- **Edit Product** — tap the edit icon on any card to update product details.
-- **Delete Product** — tap the delete icon with confirmation dialog.
-
-#### Adding a Product
-Tap **`+ Add`** in the header. Fill in:
-
-| Field | Description |
-|---|---|
-| Name | Product name |
-| SKU | Unique Stock Keeping Unit code |
-| IMEI | Device IMEI (for unique mobile unit tracking) |
-| Category | Mobile / Accessories / Other Products |
-| Condition | First Hand / Second Hand |
-| Quantity | Current stock count |
-| Cost Price | Purchase / buying price |
-| Selling Price | Retail sale price |
-| Min Stock Threshold | Alert trigger level |
-| Distributor / Supplier | Supplier name |
-| Seller Name & Phone | Second-hand seller contact info |
-| Location | Warehouse / shelf location |
-| Photo | Upload product photo from camera or gallery |
-
-> ⚠️ **IMEI-tracked devices** cannot be Quick Stock In'd to prevent duplicate IMEI conflicts. Add each new unit separately via the `+ Add` button with its own unique IMEI.
-
-### 🛒 POS / Sales Tab
-A Point-of-Sale screen to process sales:
-- Browse available inventory.
-- Select item and enter quantity sold.
-- Record customer name and sale details.
-- Stock is automatically deducted on confirmation.
-- Sale is logged in the transaction history.
-
-### 💰 Finance Tab
-- Full **transaction history** (Stock In / Stock Out / Sales / Adjustments).
-- Profit & Loss calculations based on cost vs. selling price.
-- Summary analytics with charts.
-
-### ⚙️ Account Tab
-- View and edit your account profile.
-- **Change PIN** — update your 4-digit app lock PIN.
-- **Lock App** — immediately lock to the PIN screen.
-- **Logout** — clears the stored session and returns to the Login screen.
+For physical Android devices, scan the Expo QR code using **Expo Go**.
 
 ---
 
-## 🔌 PHP REST API Reference
+# 🌐 PHP Backend
 
-All endpoints are served from `api/api.php` (or individual `.php` files).
+The application communicates with a PHP REST API.
 
-### Authentication
-
-| Method | Endpoint | Body | Description |
-|---|---|---|---|
-| `POST` | `/api.php` | `{ email, password, website }` | Admin login |
-| `POST` | `/auth.php` | `{ email, password, website }` | Admin login (alternate) |
-| `POST` | `/auth.php` | `{ action: "emp_login", empid, code }` | Employee login |
-
-### Inventory Items
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/items.php` | List all items |
-| `GET` | `/items.php?search=phone` | Search items |
-| `GET` | `/items.php?category=Mobile` | Filter by category |
-| `GET` | `/items.php?filter=low_stock` | Filter low stock items |
-| `GET` | `/items.php?filter=out_of_stock` | Filter out-of-stock items |
-| `POST` | `/items.php` | Create a new item |
-| `POST` | `/items.php` | `{ action: "update", ...itemData }` — Update item |
-| `POST` | `/items.php` | `{ action: "adjust_stock", item_id, change, reason }` — Adjust stock |
-| `DELETE` | `/items.php?id={id}` | Delete an item (moves to Recycle Bin) |
-
-### Categories & Stats
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/categories.php` | List all categories |
-| `GET` | `/stats.php` | Dashboard summary stats + low stock alerts |
-
-### Transactions
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api.php?action=transactions&limit=50` | Get recent transaction logs |
-| `POST` | `/api.php?action=delete_transaction` | Delete a transaction |
-
-### Invoices
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api.php?action=get_invoices` | List all invoices |
-| `POST` | `/api.php?action=create_invoice` | Create new invoice |
-| `POST` | `/api.php?action=delete_invoice` | Delete an invoice |
-
-### Recycle Bin
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api.php?action=get_bin` | List deleted items in bin |
-| `POST` | `/api.php?action=restore_from_bin` | Restore item from bin |
-| `POST` | `/api.php?action=delete_bin_item` | Permanently delete from bin |
-| `POST` | `/api.php?action=empty_bin` | Empty the entire bin |
-
-### Image Upload
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api.php?action=upload_image` | Upload product image (multipart or Base64) |
-
----
-
-## 🗄️ Database Configuration
-
-By default the backend uses **SQLite** (`api/inventory.sqlite`) — zero configuration needed, works out of the box.
-
-### Switch to MySQL
-
-Set the following environment variables before starting the PHP server:
+### Start locally
 
 ```bash
+php -S localhost:8000 -t api/
+```
+
+Or deploy the `api/` directory to your PHP hosting environment.
+
+### Backend structure
+
+```text
+api/
+├── api.php
+├── auth.php
+├── items.php
+├── categories.php
+├── transactions.php
+├── stats.php
+├── users.php
+└── db.php
+```
+
+---
+
+# 🔌 API
+
+## Authentication
+
+### Admin Login
+
+```http
+POST /api.php
+```
+
+```json
+{
+  "email": "user@example.com",
+  "password": "password",
+  "website": "https://example.com"
+}
+```
+
+### Employee Login
+
+```http
+POST /auth.php
+```
+
+```json
+{
+  "action": "emp_login",
+  "empid": "EMP001",
+  "code": "1234"
+}
+```
+
+---
+
+## Inventory
+
+### Get Products
+
+```http
+GET /items.php
+```
+
+### Search
+
+```http
+GET /items.php?search=phone
+```
+
+### Category Filter
+
+```http
+GET /items.php?category=Mobile
+```
+
+### Low Stock
+
+```http
+GET /items.php?filter=low_stock
+```
+
+### Create Product
+
+```http
+POST /items.php
+```
+
+### Update Product
+
+```http
+POST /items.php
+```
+
+```json
+{
+  "action": "update"
+}
+```
+
+### Delete Product
+
+```http
+DELETE /items.php?id=1
+```
+
+---
+
+# 🗄️ Database
+
+Nibit Inventory supports:
+
+### SQLite
+
+Default configuration:
+
+```text
+SQLite
+↓
+Zero external database configuration
+↓
+Suitable for local/demo environments
+```
+
+### MySQL
+
+For production environments:
+
+```env
 DB_TYPE=mysql
 DB_HOST=127.0.0.1
 DB_NAME=inventory_db
@@ -257,131 +517,185 @@ DB_USER=root
 DB_PASS=your_password
 ```
 
-Or edit `api/db.php` directly and set the `$DB_TYPE` constant.
+> ⚠️ Never commit real database passwords or API secrets to GitHub.
 
 ---
 
-## 🏗️ Project Structure
+# 📦 Build Android APK
 
-```
-inventory-app/
-├── App.js                      # Root component — Auth, navigation, state
-├── app.json                    # Expo app configuration (icons, splash, bundle IDs)
-├── eas.json                    # EAS Build profiles (development, preview, production)
-├── index.js                    # Expo entry point
-│
-├── assets/                     # App icons, splash screens, logos
-│   ├── icon.png
-│   ├── splash-icon.png
-│   └── favicon.png
-│
-├── api/                        # PHP REST API backend
-│   ├── api.php                 # Main unified API handler
-│   ├── auth.php                # Login & authentication
-│   ├── items.php               # CRUD for inventory items
-│   ├── categories.php          # Category management
-│   ├── transactions.php        # Stock movement logs
-│   ├── stats.php               # Dashboard statistics
-│   ├── users.php               # User management
-│   ├── db.php                  # Database connection (SQLite / MySQL)
-│   └── inventory.sqlite        # Default SQLite database file
-│
-└── src/
-    ├── components/
-    │   ├── LoginScreen.js          # Email + Employee login screen
-    │   ├── PinLockScreen.js        # PIN / biometric lock screen
-    │   ├── Header.js               # Top bar with search + add button
-    │   ├── HomeView.js             # Home dashboard tab
-    │   ├── InventoryItemCard.js    # Product card with quick stock steppers
-    │   ├── ItemModal.js            # Add / Edit product form modal
-    │   ├── StockAdjustmentModal.js # Advanced stock in/out modal
-    │   ├── StatsOverview.js        # Summary metric cards
-    │   ├── PosView.js              # Point-of-Sale screen
-    │   ├── FinanceView.js          # Finance & analytics tab
-    │   ├── AnalyticsView.js        # Charts and breakdown view
-    │   ├── AccountView.js          # Account settings tab
-    │   ├── TransactionsList.js     # Movement history list
-    │   ├── BarcodeScannerModal.js  # Camera-based barcode/SKU scanner
-    │   └── SettingsModal.js        # Server URL & PIN settings
-    │
-    ├── services/
-    │   ├── apiService.js           # All HTTP calls to the PHP backend
-    │   └── sessionService.js       # Persistent login session via AsyncStorage
-    │
-    └── data/
-        └── initialData.js          # Seed data for offline / demo mode
-```
+Nibit Inventory uses **Expo Application Services (EAS)**.
 
----
-
-## 📦 Building the App
-
-Builds are managed through **EAS Build** (Expo Application Services).
-
-### Development Build (for testing with native modules)
-
-```bash
-npx eas-cli@latest build --platform android --profile development
-```
-
-### Preview / Internal Testing APK
+### Preview APK
 
 ```bash
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-### Production Build (for Google Play Store)
+### Development Build
+
+```bash
+npx eas-cli@latest build --platform android --profile development
+```
+
+### Production Build
 
 ```bash
 npx eas-cli@latest build --platform android --profile production
 ```
 
-After the build finishes, download the `.apk` from the EAS dashboard link provided in the terminal and install it on your device.
+---
+
+# 📱 Latest Build
+
+### Android APK
+
+The project currently has an EAS build available:
+
+**Build ID:** `dfe1bc06`
+
+👉 [Open Android Build on Expo](https://expo.dev/accounts/nikhil_kolasani/projects/inventory-app/builds/dfe1bc06-68ba-46fc-a0a8-813340d80d16)
 
 ---
 
-## 🔑 Default Demo Credentials
+# 🔄 Development Workflow
 
-If the PHP backend is unreachable, the app falls back to local demo mode:
+```text
+Write Code
+    ↓
+Test with Expo
+    ↓
+Test API
+    ↓
+Commit Changes
+    ↓
+Push to GitHub
+    ↓
+EAS Build
+    ↓
+Android APK
+```
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | `shouky@gmail.com` | `9441166030@Nk` |
-| Admin | `kolasaninikhil1@gmail.com` | `9441166030@Nk` |
+### Git commands
 
-> Default PIN lock code: **`1234`**
-
----
-
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Mobile Framework | [Expo SDK 57](https://docs.expo.dev/) + React Native 0.86 |
-| Language | JavaScript (ES2023) |
-| Icons | [@expo/vector-icons](https://docs.expo.dev/guides/icons/) (Ionicons) |
-| Local Storage | [AsyncStorage](https://docs.expo.dev/versions/latest/sdk/async-storage/) |
-| Camera / Gallery | [expo-image-picker](https://docs.expo.dev/versions/latest/sdk/imagepicker/) |
-| Biometrics | [expo-local-authentication](https://docs.expo.dev/versions/latest/sdk/local-authentication/) |
-| File Upload | [expo-file-system](https://docs.expo.dev/versions/latest/sdk/filesystem/) |
-| Printing / Export | [expo-print](https://docs.expo.dev/versions/latest/sdk/print/) + [expo-sharing](https://docs.expo.dev/versions/latest/sdk/sharing/) |
-| Backend | PHP 7.4+ REST API |
-| Database | SQLite (default) / MySQL (configurable) |
-| Cloud Builds | [EAS Build](https://docs.expo.dev/build/introduction/) |
+```bash
+git add .
+git commit -m "Update inventory app"
+git push
+```
 
 ---
 
-## 📄 License
+# 🔒 Security
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+Before deploying to production:
+
+* Use HTTPS
+* Never commit passwords
+* Never commit API keys
+* Use environment variables
+* Protect database credentials
+* Validate API requests
+* Implement proper authentication
+* Configure CORS correctly
 
 ---
 
-## 👤 Author
+# 🧪 Current Capabilities
+
+| Feature           | Status |
+| ----------------- | :----: |
+| Authentication    |    ✅   |
+| PIN Lock          |    ✅   |
+| Biometric Unlock  |    ✅   |
+| Inventory CRUD    |    ✅   |
+| IMEI Tracking     |    ✅   |
+| Stock Adjustment  |    ✅   |
+| POS               |    ✅   |
+| Finance           |    ✅   |
+| Analytics         |    ✅   |
+| Invoices          |    ✅   |
+| Product Images    |    ✅   |
+| Recycle Bin       |    ✅   |
+| PHP REST API      |    ✅   |
+| SQLite            |    ✅   |
+| MySQL Support     |    ✅   |
+| EAS Android Build |    ✅   |
+
+---
+
+# 🗺️ Roadmap
+
+Future improvements can include:
+
+* [ ] Push notifications
+* [ ] Cloud backup
+* [ ] Multi-shop support
+* [ ] Advanced employee permissions
+* [ ] Barcode hardware integration
+* [ ] Supplier management
+* [ ] Customer management
+* [ ] Advanced financial reports
+* [ ] Automated database backups
+* [ ] Google Play Store release
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+```text
+Fork
+ ↓
+Create Branch
+ ↓
+Make Changes
+ ↓
+Commit
+ ↓
+Push
+ ↓
+Pull Request
+```
+
+Example:
+
+```bash
+git checkout -b feature/new-feature
+git add .
+git commit -m "Add new feature"
+git push origin feature/new-feature
+```
+
+Then open a Pull Request.
+
+---
+
+# 📄 License
+
+This project is licensed under the **MIT License**.
+
+See [`LICENSE`](LICENSE) for details.
+
+---
+
+# 👨‍💻 Author
 
 **Nikhil Kolasani**
-📧 kolasaninikhil1@gmail.com
+
+📧 `kolasaninikhil1@gmail.com`
+
+🔗 GitHub:
+https://github.com/Nikhilkolasani007
 
 ---
 
-> Built with ❤️ for small businesses managing mobile phone and electronics inventory.
+<p align="center">
+
+### 📦 Nibit Inventory
+
+**Manage Stock. Track Sales. Understand Your Business.**
+
+Built with ❤️ using Expo React Native + PHP
+
+</p>
