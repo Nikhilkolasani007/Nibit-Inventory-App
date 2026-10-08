@@ -41,7 +41,7 @@ export default function PinLockScreen({
         setBiometricTypes(types);
 
         const result = await LocalAuthentication.authenticateAsync({
-          promptMessage: 'Unlock Nibit Inventory',
+          promptMessage: 'Unlock Shouky Mobiles',
           fallbackLabel: 'Use PIN',
           cancelLabel: 'Cancel',
           disableDeviceFallback: false,
@@ -109,7 +109,7 @@ export default function PinLockScreen({
 
       if (hasHardware && isEnrolled) {
         const result = await LocalAuthentication.authenticateAsync({
-          promptMessage: 'Unlock Nibit Inventory',
+          promptMessage: 'Unlock Shouky Mobiles',
           fallbackLabel: 'Use PIN',
           cancelLabel: 'Cancel',
           disableDeviceFallback: false,
@@ -137,7 +137,7 @@ export default function PinLockScreen({
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.brandTitle}>Nibit Inventory</Text>
+        <Text style={styles.brandTitle}>Shouky Mobiles</Text>
         
         {/* User identification badge */}
         <View style={styles.userBadge}>

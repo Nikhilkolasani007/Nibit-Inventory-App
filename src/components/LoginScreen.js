@@ -104,8 +104,8 @@ export default function LoginScreen({ onLoginSuccess }) {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.brandTitle}>Nibit Inventory</Text>
-          <Text style={styles.brandSubtitle}>Enterprise Warehouse & Stock Management</Text>
+          <Text style={styles.brandTitle}>Shouky Mobiles</Text>
+          <Text style={styles.brandSubtitle}>Store & Inventory Management</Text>
         </View>
 
         {/* Form Card */}

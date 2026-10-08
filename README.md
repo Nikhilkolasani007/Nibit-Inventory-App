@@ -1,4 +1,4 @@
-# 📦 Nibit Inventory
+# 📦 Shouky Mobiles
 
 <p align="center">
   <strong>Modern Inventory Management for Mobile & Electronics Businesses</strong>
@@ -29,7 +29,7 @@
 
 ## 🚀 About
 
-**Nibit Inventory** is a modern mobile inventory management application designed for **mobile phone, electronics, and small retail businesses**.
+**Shouky Mobiles** is a modern mobile inventory management application designed for **mobile phone, electronics, and small retail businesses**.
 
 The application provides inventory management, IMEI tracking, point-of-sale functionality, financial analytics, invoices, stock management, authentication, image uploads, and backend synchronization.
 

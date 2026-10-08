@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "InventoryApp",
-    "slug": "inventory-app",
+    "name": "Shouky Mobiles",
+    "slug": "shouky-mobiles",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,7 +15,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/icon.png"
       },
       "package": "com.nikhil_kolasani.inventoryapp"

@@ -90,7 +90,7 @@ export default function SettingsModal({
           {/* Header */}
           <View style={styles.header}>
             <View>
-              <Text style={styles.title}>Nibit Settings</Text>
+              <Text style={styles.title}>Shouky Mobiles Settings</Text>
               <Text style={styles.subtitle}>Configure REST backend & security</Text>
             </View>
             <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
