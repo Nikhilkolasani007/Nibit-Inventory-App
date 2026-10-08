@@ -54,9 +54,10 @@ export default function HomeView({ items = [], transactions = [], user, onNaviga
     return transactions.filter((tx) => {
       const isSale = tx.type === 'OUT' || tx.type === 'SALE';
       const isToday = tx.created_at ? tx.created_at.slice(0, 10) === todayStr : true;
-      return isSale && isToday;
+      const itemExists = items.some((it) => String(it.id) === String(tx.item_id));
+      return isSale && isToday && itemExists;
     });
-  }, [transactions, todayStr]);
+  }, [transactions, todayStr, items]);
 
   const localRevenue = todaySalesLocal.reduce((acc, s) => {
     const price = parseFloat(s.selling_price || s.price || 0);
@@ -76,7 +77,10 @@ export default function HomeView({ items = [], transactions = [], user, onNaviga
     // From transactions of type IN today
     transactions.forEach((tx) => {
       if (tx.type === 'IN' && tx.created_at && tx.created_at.slice(0, 10) === todayStr) {
-        count += (parseInt(tx.quantity, 10) || 1);
+        const itemExists = items.some((it) => String(it.id) === String(tx.item_id));
+        if (itemExists) {
+          count += (parseInt(tx.quantity, 10) || 1);
+        }
       }
     });
     return count;
@@ -140,15 +144,18 @@ export default function HomeView({ items = [], transactions = [], user, onNaviga
     if (!backendAnalytics?.monthly_sales || backendAnalytics.monthly_sales.length === 0) {
       transactions.forEach((tx) => {
         if (tx.type === 'OUT' || tx.type === 'SALE') {
-          const d = tx.created_at ? new Date(tx.created_at) : new Date();
-          const mIdx = d.getMonth();
-          if (months[mIdx]) {
-            const sp = parseFloat(tx.selling_price || tx.price || 0);
-            const cp = parseFloat(tx.cost_price || 0);
-            const q = parseInt(tx.quantity, 10) || 1;
-            months[mIdx].revenue += (sp * q);
-            months[mIdx].margin += ((sp - cp) * q);
-            months[mIdx].count += q;
+          const itemExists = items.some((it) => String(it.id) === String(tx.item_id));
+          if (itemExists) {
+            const d = tx.created_at ? new Date(tx.created_at) : new Date();
+            const mIdx = d.getMonth();
+            if (months[mIdx]) {
+              const sp = parseFloat(tx.selling_price || tx.price || 0);
+              const cp = parseFloat(tx.cost_price || 0);
+              const q = parseInt(tx.quantity, 10) || 1;
+              months[mIdx].revenue += (sp * q);
+              months[mIdx].margin += ((sp - cp) * q);
+              months[mIdx].count += q;
+            }
           }
         }
       });

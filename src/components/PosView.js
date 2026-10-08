@@ -73,8 +73,10 @@ export default function PosView({ items, onRecordSale, user }) {
 
   useEffect(() => {
     if (activeSubTab === 'invoices') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadInvoices();
     } else if (activeSubTab === 'trash') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadBin();
     }
   }, [activeSubTab]);

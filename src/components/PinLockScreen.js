@@ -57,6 +57,7 @@ export default function PinLockScreen({
   }, [onUnlockSuccess]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     triggerNativeDeviceLock();
   }, [triggerNativeDeviceLock]);
 

@@ -11,12 +11,14 @@ import {
   TextInput,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import apiService from '../services/apiService';
+import apiService, { getImageUrl } from '../services/apiService';
 import sessionService from '../services/sessionService';
 import { handlePrintPdf, handleSharePdf } from '../utils/invoiceUtils';
+import TransactionsList from './TransactionsList';
 
 export default function AccountView({ user, items = [], onLockApp, onLogout, onUpdateUser }) {
   const [activeTab, setActiveTab] = useState('settings'); // 'settings' | 'directory'
@@ -55,13 +57,21 @@ export default function AccountView({ user, items = [], onLockApp, onLogout, onU
   const [loadingDirectory, setLoadingDirectory] = useState(false);
   const [filterType, setFilterType] = useState('all'); // 'all' | 'customers' | 'sellers'
 
-  React.useEffect(() => {
-    if (activeTab === 'settings') {
-      loadEmployees();
-    } else if (activeTab === 'directory') {
-      loadInvoices();
+  // Transactions State
+  const [transactions, setTransactions] = useState([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+
+  const loadTransactions = async () => {
+    setLoadingTransactions(true);
+    try {
+      const data = await apiService.fetchTransactions(300);
+      setTransactions(data || []);
+    } catch (e) {
+      console.warn('Could not load transactions:', e.message);
+    } finally {
+      setLoadingTransactions(false);
     }
-  }, [activeTab]);
+  };
 
   const loadInvoices = async () => {
     setLoadingDirectory(true);
@@ -89,6 +99,16 @@ export default function AccountView({ user, items = [], onLockApp, onLogout, onU
     }
   };
 
+  React.useEffect(() => {
+    if (activeTab === 'settings') {
+      loadEmployees();
+    } else if (activeTab === 'directory') {
+      loadInvoices();
+    } else if (activeTab === 'logs') {
+      loadTransactions();
+    }
+  }, [activeTab]);
+
   // Combine invoices (customers) and items (sellers/purchases) for unified directory
   const getDirectoryData = () => {
     let combined = [];
@@ -96,6 +116,7 @@ export default function AccountView({ user, items = [], onLockApp, onLogout, onU
     // 1. Add Customers (from Sales Invoices)
     if (filterType === 'all' || filterType === 'customers') {
       invoices.forEach(inv => {
+        const correspondingItem = items.find(it => it.id == inv.item_id) || {};
         combined.push({
           ...inv,
           dir_type: 'Customer (Sale)',
@@ -103,7 +124,8 @@ export default function AccountView({ user, items = [], onLockApp, onLogout, onU
           dir_phone: inv.customer_phone,
           dir_date: inv.invoice_date || inv.created_at,
           dir_invoice_no: inv.invoice_no,
-          dir_amount: inv.selling_price
+          dir_amount: inv.selling_price,
+          dir_image: inv.images || correspondingItem.images
         });
       });
     }
@@ -119,7 +141,8 @@ export default function AccountView({ user, items = [], onLockApp, onLogout, onU
             dir_phone: item.seller_phone || 'N/A',
             dir_date: item.created_at || 'N/A',
             dir_invoice_no: `PUR-${item.id}`,
-            dir_amount: item.cost_price
+            dir_amount: item.cost_price,
+            dir_image: item.images
           });
         }
       });
@@ -303,8 +326,17 @@ export default function AccountView({ user, items = [], onLockApp, onLogout, onU
           onPress={() => setActiveTab('directory')}
         >
           <Ionicons name="people" size={15} color={activeTab === 'directory' ? '#FFFFFF' : '#64748B'} />
-          <Text style={[styles.topTabBtnText, activeTab === 'directory' && styles.topTabBtnTextActive]}>Customers & Sellers</Text>
+          <Text style={[styles.topTabBtnText, activeTab === 'directory' && styles.topTabBtnTextActive]}>Customers</Text>
         </TouchableOpacity>
+        {!isEmployee && (
+          <TouchableOpacity
+            style={[styles.topTabBtn, activeTab === 'logs' && styles.topTabBtnActive]}
+            onPress={() => setActiveTab('logs')}
+          >
+            <Ionicons name="list" size={15} color={activeTab === 'logs' ? '#FFFFFF' : '#64748B'} />
+            <Text style={[styles.topTabBtnText, activeTab === 'logs' && styles.topTabBtnTextActive]}>Logs</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {activeTab === 'directory' ? (
@@ -356,9 +388,21 @@ export default function AccountView({ user, items = [], onLockApp, onLogout, onU
                 return (
                   <View key={index} style={styles.dirCard}>
                     <View style={styles.dirCardHeader}>
-                      <View>
-                        <Text style={styles.dirName}>{record.dir_name}</Text>
-                        <Text style={styles.dirPhone}><Ionicons name="call" size={10} /> {record.dir_phone}</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 8 }}>
+                        {record.dir_image ? (
+                           <Image 
+                             source={{ uri: getImageUrl(record.dir_image) }} 
+                             style={{ width: 42, height: 42, borderRadius: 8, marginRight: 10, backgroundColor: '#F1F5F9' }}
+                           />
+                        ) : (
+                           <View style={{ width: 42, height: 42, borderRadius: 8, marginRight: 10, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
+                              <Ionicons name={isPurchase ? "cube-outline" : "person-outline"} size={22} color="#94A3B8" />
+                           </View>
+                        )}
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.dirName} numberOfLines={1}>{record.dir_name}</Text>
+                          <Text style={styles.dirPhone}><Ionicons name="call" size={10} /> {record.dir_phone}</Text>
+                        </View>
                       </View>
                       <View style={[styles.dirBadge, isPurchase ? styles.dirBadgePur : styles.dirBadgeSale]}>
                         <Text style={[styles.dirBadgeText, isPurchase ? styles.dirBadgeTextPur : styles.dirBadgeTextSale]}>
@@ -404,6 +448,18 @@ export default function AccountView({ user, items = [], onLockApp, onLogout, onU
             )}
             <View style={{ height: 100 }} />
           </ScrollView>
+        </View>
+      ) : activeTab === 'logs' ? (
+        <View style={{ flex: 1 }}>
+          {loadingTransactions ? (
+            <ActivityIndicator size="large" color="#0F766E" style={{ marginTop: 40 }} />
+          ) : (
+            <TransactionsList 
+               transactions={transactions} 
+               onRefresh={loadTransactions} 
+               isRefreshing={loadingTransactions} 
+            />
+          )}
         </View>
       ) : (
         <ScrollView style={styles.settingsContent} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>

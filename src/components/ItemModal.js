@@ -1204,11 +1204,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
-  inputHint: {
-    fontSize: 11,
-    color: '#94A3B8',
-    marginTop: 4,
-  },
+
   uploadedBadge: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -161,6 +161,7 @@ try {
             `reason` VARCHAR(255) DEFAULT '',
             `previous_quantity` INT DEFAULT 0,
             `new_quantity` INT DEFAULT 0,
+            `created_by` VARCHAR(191) DEFAULT 'System',
             `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
@@ -191,6 +192,18 @@ try {
         }
         if (!in_array('condition_notes', $invCols)) {
             $pdo->exec("ALTER TABLE `invoices` ADD COLUMN `condition_notes` TEXT DEFAULT NULL");
+        }
+    } catch (Exception $e) {}
+
+    // Transactions auto-migration for created_by
+    try {
+        $txCols = [];
+        $txColStmt = $pdo->query("SHOW COLUMNS FROM `transactions`");
+        while ($c = $txColStmt->fetch()) {
+            $txCols[] = strtolower($c['Field']);
+        }
+        if (!in_array('created_by', $txCols)) {
+            $pdo->exec("ALTER TABLE `transactions` ADD COLUMN `created_by` VARCHAR(191) DEFAULT 'System'");
         }
     } catch (Exception $e) {}
 

@@ -231,28 +231,30 @@ export default function InventoryItemCard({
         {/* Stepper Buttons */}
         <View style={styles.stepperGroup}>
           <TouchableOpacity
-            style={[styles.stepBtn, qty <= 0 && styles.stepDisabled]}
-            disabled={qty <= 0}
+            style={[styles.stepBtn, (qty <= 0 || hasImei) && styles.stepDisabled]}
+            disabled={qty <= 0 || hasImei}
             onPress={() => onQuickAdjust(item, 'OUT', 1)}
           >
-            <Ionicons name="remove" size={15} color={qty <= 0 ? '#94A3B8' : '#0F172A'} />
+            <Ionicons name="remove" size={15} color={(qty <= 0 || hasImei) ? '#94A3B8' : '#0F172A'} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.stepNumWrap}
-            onPress={() => onOpenStockModal(item)}
+            onPress={() => !hasImei && onOpenStockModal(item)}
+            disabled={hasImei}
           >
-            <Text style={styles.stepNum}>{qty}</Text>
+            <Text style={[styles.stepNum, hasImei && { color: '#64748B' }]}>{qty}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.stepBtn}
+            style={[styles.stepBtn, hasImei && styles.stepDisabled]}
+            disabled={hasImei}
             onPress={handlePlusPress}
           >
             <Ionicons
               name="add"
               size={14}
-              color="#0F172A"
+              color={hasImei ? '#94A3B8' : '#0F172A'}
             />
           </TouchableOpacity>
         </View>

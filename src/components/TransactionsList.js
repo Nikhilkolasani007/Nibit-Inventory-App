@@ -75,7 +75,7 @@ export default function TransactionsList({ transactions, onRefresh, isRefreshing
         </View>
 
         <View style={styles.metaFooter}>
-          <Text style={styles.reasonText}>Reason: {item.reason || 'Manual Adjustment'}</Text>
+          <Text style={styles.reasonText}>By: {item.created_by || item.user_id || 'System'} • Reason: {item.reason || 'Manual Adjustment'}</Text>
           <Text style={styles.stockLevelText}>
             {item.previous_quantity} → {item.new_quantity}
           </Text>

@@ -456,12 +456,12 @@ if ($action === 'create_invoice' || $action === 'record_sale') {
                 $profit = max(0, $sellingPrice - $costPrice);
                 $txStmt = $pdo->prepare("
                     INSERT INTO `transactions` (
-                        item_id, item_name, sku, type, quantity, cost_price, selling_price, profit, reason, created_at
-                    ) VALUES (?, ?, ?, 'SALE', 1, ?, ?, ?, ?, NOW())
+                        item_id, item_name, sku, type, quantity, cost_price, selling_price, profit, reason, created_by, created_at
+                    ) VALUES (?, ?, ?, 'SALE', 1, ?, ?, ?, ?, ?, NOW())
                 ");
                 $txStmt->execute([
                     $itemId ?: null, $itemName, $imei, $costPrice, $sellingPrice, $profit,
-                    "Customer Sale ({$invoiceNo}): {$customerName}"
+                    "Customer Sale ({$invoiceNo}): {$customerName}", $createdBy
                 ]);
             } catch (Exception $txEx) {}
 
@@ -631,14 +631,14 @@ if ($action === 'restore_from_bin') {
                 } elseif ($type === 'transaction' && !empty($data)) {
                     $ins = $pdo->prepare("
                         INSERT INTO `transactions` (
-                            item_id, item_name, sku, type, quantity, cost_price, selling_price, profit, reason, created_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            item_id, item_name, sku, type, quantity, cost_price, selling_price, profit, reason, created_by, created_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ");
                     $ins->execute([
                         $data['item_id'] ?? null, $data['item_name'] ?? '', $data['sku'] ?? '',
                         $data['type'] ?? 'SALE', $data['quantity'] ?? 1, $data['cost_price'] ?? 0,
                         $data['selling_price'] ?? 0, $data['profit'] ?? 0, ($data['reason'] ?? '') . ' (Restored)',
-                        $data['created_at'] ?? date('Y-m-d H:i:s')
+                        $data['created_by'] ?? 'System', $data['created_at'] ?? date('Y-m-d H:i:s')
                     ]);
                 }
                 $del = $pdo->prepare("DELETE FROM `trash_bin` WHERE id = ?");
@@ -706,11 +706,12 @@ if ($action === 'analytics' || $action === 'get_analytics') {
             // 1. Today's Sales Count, Revenue, Margin
             $todayStmt = $pdo->query("
                 SELECT 
-                    COUNT(*) as sales_count,
-                    COALESCE(SUM(selling_price), 0) as total_revenue,
-                    COALESCE(SUM(selling_price - cost_price), 0) as total_margin
-                FROM `invoices`
-                WHERE DATE(invoice_date) = CURDATE()
+                    COUNT(i.id) as sales_count,
+                    COALESCE(SUM(i.selling_price), 0) as total_revenue,
+                    COALESCE(SUM(i.selling_price - i.cost_price), 0) as total_margin
+                FROM `invoices` i
+                INNER JOIN `items` t ON t.id = i.item_id
+                WHERE DATE(i.invoice_date) = CURDATE()
             ");
             $todayData = $todayStmt ? $todayStmt->fetch() : null;
             if ($todayData) {
@@ -746,13 +747,14 @@ if ($action === 'analytics' || $action === 'get_analytics') {
             // 3. Monthly Sales Breakdown (Last 12 Months)
             $monthStmt = $pdo->query("
                 SELECT 
-                    DATE_FORMAT(invoice_date, '%b') as month_short,
-                    DATE_FORMAT(invoice_date, '%M %Y') as month_full,
-                    DATE_FORMAT(invoice_date, '%Y-%m') as year_month,
-                    COUNT(*) as count,
-                    COALESCE(SUM(selling_price), 0) as revenue,
-                    COALESCE(SUM(selling_price - cost_price), 0) as margin
-                FROM `invoices`
+                    DATE_FORMAT(i.invoice_date, '%b') as month_short,
+                    DATE_FORMAT(i.invoice_date, '%M %Y') as month_full,
+                    DATE_FORMAT(i.invoice_date, '%Y-%m') as year_month,
+                    COUNT(i.id) as count,
+                    COALESCE(SUM(i.selling_price), 0) as revenue,
+                    COALESCE(SUM(i.selling_price - i.cost_price), 0) as margin
+                FROM `invoices` i
+                INNER JOIN `items` t ON t.id = i.item_id
                 GROUP BY year_month, month_short, month_full
                 ORDER BY year_month ASC
                 LIMIT 12

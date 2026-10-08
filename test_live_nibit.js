@@ -1,3 +1,4 @@
+/* eslint-env node */
 const https = require('https');
 
 function test(path, method, data, label) {
