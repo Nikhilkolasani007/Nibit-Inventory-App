@@ -11,11 +11,13 @@ const MONTH_FULL = [
 ];
 
 export default function HomeView({ items = [], transactions = [], user, onNavigateTab, onOpenAddModal }) {
+  const isEmployee = user?.role === 'employee';
   const [backendAnalytics, setBackendAnalytics] = useState(null);
   const [selectedMonthIdx, setSelectedMonthIdx] = useState(new Date().getMonth());
 
-  // Fetch live server analytics from MySQL
+  // Fetch live server analytics from MySQL (Admin Only)
   useEffect(() => {
+    if (user?.role === 'employee') return;
     let isMounted = true;
     apiService.fetchAnalytics()
       .then((data) => {
@@ -23,11 +25,11 @@ export default function HomeView({ items = [], transactions = [], user, onNaviga
           setBackendAnalytics(data);
         }
       })
-      .catch((err) => {
+      .catch((_err) => {
         // Fallback gracefully to frontend calculation
       });
     return () => { isMounted = false; };
-  }, [items.length, transactions.length]);
+  }, [items.length, transactions.length, user?.role]);
 
   // Overall catalog metrics
   const totalStockUnits = items.reduce((acc, it) => acc + (parseInt(it.quantity, 10) || 0), 0);
@@ -220,14 +222,25 @@ export default function HomeView({ items = [], transactions = [], user, onNaviga
           <Text style={styles.statSub}>{totalStockUnits} units in stock</Text>
         </View>
 
-        <View style={[styles.statBox, { borderColor: '#E2E8F0' }]}>
-          <View style={[styles.statIconWrap, { backgroundColor: '#ECFDF5' }]}>
-            <Ionicons name="cash" size={20} color="#059669" />
+        {!isEmployee ? (
+          <View style={[styles.statBox, { borderColor: '#E2E8F0' }]}>
+            <View style={[styles.statIconWrap, { backgroundColor: '#ECFDF5' }]}>
+              <Ionicons name="cash" size={20} color="#059669" />
+            </View>
+            <Text style={[styles.statValue, { color: '#059669' }]}>Rs {totalInventoryValue.toLocaleString('en-IN')}</Text>
+            <Text style={styles.statLabel}>Stock Retail Value</Text>
+            <Text style={styles.statSub}>Current catalog worth</Text>
           </View>
-          <Text style={[styles.statValue, { color: '#059669' }]}>Rs {totalInventoryValue.toLocaleString('en-IN')}</Text>
-          <Text style={styles.statLabel}>Stock Retail Value</Text>
-          <Text style={styles.statSub}>Current catalog worth</Text>
-        </View>
+        ) : (
+          <View style={[styles.statBox, { borderColor: '#E2E8F0' }]}>
+            <View style={[styles.statIconWrap, { backgroundColor: '#F0FDFA' }]}>
+              <Ionicons name="layers" size={20} color="#0F766E" />
+            </View>
+            <Text style={[styles.statValue, { color: '#0F766E' }]}>{totalStockUnits}</Text>
+            <Text style={styles.statLabel}>Total Units</Text>
+            <Text style={styles.statSub}>Total stock in store</Text>
+          </View>
+        )}
 
         <View style={[styles.statBox, { borderColor: '#E2E8F0' }]}>
           <View style={[styles.statIconWrap, { backgroundColor: '#FEF3C7' }]}>
@@ -248,170 +261,192 @@ export default function HomeView({ items = [], transactions = [], user, onNaviga
         </View>
       </View>
 
-      {/* ========================================================== */}
-      {/* 1. TODAY'S ANALYTICS SECTION (Above Quick Actions)         */}
-      {/* ========================================================== */}
-      <View style={styles.todaySectionCard}>
-        <View style={styles.sectionTitleRow}>
-          <View style={styles.todayPill}>
-            <Ionicons name="today-outline" size={14} color="#0F766E" />
-            <Text style={styles.todayPillText}>Today's Real-time Analytics</Text>
-          </View>
-          <Text style={styles.dateLabel}>{new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</Text>
-        </View>
-
-        {/* 3 Analytics Cards for Today */}
-        <View style={styles.todayMetricsRow}>
-          {/* Metric 1: Today's Sales */}
-          <View style={styles.todayMetricBox}>
-            <View style={[styles.todayIconCircle, { backgroundColor: '#ECFDF5' }]}>
-              <Ionicons name="cart" size={18} color="#059669" />
-            </View>
-            <Text style={styles.todayMetricVal}>{todaySalesCount} Sales</Text>
-            <Text style={styles.todayMetricSub}>Rs {todaySalesRevenue.toLocaleString('en-IN')}</Text>
-            <Text style={styles.todayMetricLabel}>Today's Revenue</Text>
-          </View>
-
-          {/* Metric 2: Today's Phones into Inventory */}
-          <View style={styles.todayMetricBox}>
-            <View style={[styles.todayIconCircle, { backgroundColor: '#F1F5F9' }]}>
-              <Ionicons name="phone-portrait" size={18} color="#0F172A" />
-            </View>
-            <Text style={styles.todayMetricVal}>{todayPhonesIn} Units</Text>
-            <Text style={styles.todayMetricSub}>Phones & Stock</Text>
-            <Text style={styles.todayMetricLabel}>Added Today</Text>
-          </View>
-
-          {/* Metric 3: Today's Margin / Profit */}
-          <View style={styles.todayMetricBox}>
-            <View style={[styles.todayIconCircle, { backgroundColor: '#FEF3C7' }]}>
-              <Ionicons name="trending-up" size={18} color="#D97706" />
-            </View>
-            <Text style={[styles.todayMetricVal, { color: '#059669' }]}>+Rs {todayMargin.toLocaleString('en-IN')}</Text>
-            <View style={styles.marginTag}>
-              <Text style={styles.marginTagText}>+{todayMarginPercent}%</Text>
-            </View>
-            <Text style={styles.todayMetricLabel}>Profit Margin</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* ========================================================== */}
-      {/* 2. GRAPH-BASED MONTHLY SALES & BEST MONTH REPRESENTATION   */}
-      {/* ========================================================== */}
-      <View style={styles.graphCard}>
-        <View style={styles.graphHeaderRow}>
-          <View>
-            <Text style={styles.graphCardTitle}>Monthly Sales Performance</Text>
-            <Text style={styles.graphCardSub}>Interactive revenue graph per month</Text>
-          </View>
-          <View style={styles.graphBadge}>
-            <Ionicons name="bar-chart" size={14} color="#059669" />
-            <Text style={styles.graphBadgeText}>Full Year Trend</Text>
-          </View>
-        </View>
-
-        {/* Highlight Banner: IN WHICH MONTH MOST SALES WAS DONE */}
-        {peakMonth && peakMonth.revenue > 0 ? (
-          <View style={styles.peakMonthBanner}>
-            <View style={styles.trophyCircle}>
-              <Ionicons name="trophy" size={20} color="#D97706" />
+      {/* Staff Operational Terminal Info Card (Employees Only) */}
+      {isEmployee && (
+        <View style={styles.staffTerminalCard}>
+          <View style={styles.staffTerminalHeader}>
+            <View style={styles.staffTerminalIconWrap}>
+              <Ionicons name="shield-checkmark" size={20} color="#0F766E" />
             </View>
             <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Text style={styles.peakMonthTitle}>Top Sales Month: {peakMonth.full}</Text>
-                <View style={styles.championBadge}>
-                  <Text style={styles.championBadgeText}>PEAK</Text>
-                </View>
+              <Text style={styles.staffTerminalTitle}>Staff POS & Inventory Terminal</Text>
+              <Text style={styles.staffTerminalSub}>Authorized Operator: {userName}</Text>
+            </View>
+          </View>
+          <Text style={styles.staffTerminalNotice}>
+            Welcome to Shouky Mobiles staff terminal. Use POS Register to process customer sales and Inventory to verify IMEI & stock. Financial analytics are restricted to Store Administrators.
+          </Text>
+        </View>
+      )}
+
+      {/* ========================================================== */}
+      {/* 1. TODAY'S ANALYTICS SECTION (Admin Only - Hidden for Emp)  */}
+      {/* ========================================================== */}
+      {!isEmployee && (
+        <View style={styles.todaySectionCard}>
+          <View style={styles.sectionTitleRow}>
+            <View style={styles.todayPill}>
+              <Ionicons name="today-outline" size={14} color="#0F766E" />
+              <Text style={styles.todayPillText}>Today's Real-time Analytics</Text>
+            </View>
+            <Text style={styles.dateLabel}>{new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</Text>
+          </View>
+
+          {/* 3 Analytics Cards for Today */}
+          <View style={styles.todayMetricsRow}>
+            {/* Metric 1: Today's Sales */}
+            <View style={styles.todayMetricBox}>
+              <View style={[styles.todayIconCircle, { backgroundColor: '#ECFDF5' }]}>
+                <Ionicons name="cart" size={18} color="#059669" />
               </View>
-              <Text style={styles.peakMonthDesc}>
-                Highest revenue generated: <Text style={{ fontWeight: '800', color: '#0F172A' }}>Rs {peakMonth.revenue.toLocaleString('en-IN')}</Text> across {peakMonth.count} sales.
-              </Text>
+              <Text style={styles.todayMetricVal}>{todaySalesCount} Sales</Text>
+              <Text style={styles.todayMetricSub}>Rs {todaySalesRevenue.toLocaleString('en-IN')}</Text>
+              <Text style={styles.todayMetricLabel}>Today's Revenue</Text>
+            </View>
+
+            {/* Metric 2: Today's Phones into Inventory */}
+            <View style={styles.todayMetricBox}>
+              <View style={[styles.todayIconCircle, { backgroundColor: '#F1F5F9' }]}>
+                <Ionicons name="phone-portrait" size={18} color="#0F172A" />
+              </View>
+              <Text style={styles.todayMetricVal}>{todayPhonesIn} Units</Text>
+              <Text style={styles.todayMetricSub}>Phones & Stock</Text>
+              <Text style={styles.todayMetricLabel}>Added Today</Text>
+            </View>
+
+            {/* Metric 3: Today's Margin / Profit */}
+            <View style={styles.todayMetricBox}>
+              <View style={[styles.todayIconCircle, { backgroundColor: '#FEF3C7' }]}>
+                <Ionicons name="trending-up" size={18} color="#D97706" />
+              </View>
+              <Text style={[styles.todayMetricVal, { color: '#059669' }]}>+Rs {todayMargin.toLocaleString('en-IN')}</Text>
+              <View style={styles.marginTag}>
+                <Text style={styles.marginTagText}>+{todayMarginPercent}%</Text>
+              </View>
+              <Text style={styles.todayMetricLabel}>Profit Margin</Text>
             </View>
           </View>
-        ) : (
-          <View style={[styles.peakMonthBanner, { backgroundColor: '#F8FAFC', borderColor: '#E2E8F0' }]}>
-            <View style={[styles.trophyCircle, { backgroundColor: '#F1F5F9' }]}>
-              <Ionicons name="stats-chart" size={18} color="#64748B" />
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.peakMonthTitle, { color: '#334155' }]}>No Sales Recorded Yet</Text>
-              <Text style={styles.peakMonthDesc}>
-                Real sales completed via POS will instantly display here with exact revenue and peak month records.
-              </Text>
-            </View>
-          </View>
-        )}
-
-        {/* Visual Bar Chart */}
-        <View style={styles.chartContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chartBarsScroll}>
-            {monthlyData.map((item, idx) => {
-              const isSelected = selectedMonthIdx === idx;
-              const isPeak = peakMonth && peakMonth.revenue > 0 && peakMonth.index === idx;
-              const barHeightPercent = maxMonthRevenue > 0 && item.revenue > 0 ? (item.revenue / maxMonthRevenue) : 0;
-              const barPixelHeight = item.revenue > 0 ? Math.max(12, Math.round(barHeightPercent * 110)) : 4;
-
-              return (
-                <TouchableOpacity
-                  key={item.short}
-                  style={styles.barColumn}
-                  onPress={() => setSelectedMonthIdx(idx)}
-                  activeOpacity={0.7}
-                >
-                  {/* Top indicator on peak */}
-                  {isPeak ? (
-                    <View style={styles.peakStarIcon}>
-                      <Ionicons name="star" size={10} color="#D97706" />
-                    </View>
-                  ) : (
-                    <View style={{ height: 14 }} />
-                  )}
-
-                  {/* Vertical bar column */}
-                  <View style={styles.barTrack}>
-                    <View
-                      style={[
-                        styles.barFill,
-                        { height: barPixelHeight },
-                        item.revenue === 0
-                          ? styles.barFillZero
-                          : isPeak
-                          ? styles.barFillPeak
-                          : styles.barFillNormal,
-                        isSelected && styles.barFillSelected
-                      ]}
-                    />
-                  </View>
-
-                  {/* Month Label */}
-                  <Text style={[styles.barMonthText, isSelected && styles.barMonthTextActive, isPeak && { fontWeight: '800' }]}>
-                    {item.short}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
         </View>
+      )}
 
-        {/* Selected Month Inspector Details Pill */}
-        {selectedMonth && (
-          <View style={styles.selectedMonthDetails}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <View style={[styles.statusDot, { backgroundColor: peakMonth && peakMonth.index === selectedMonth.index ? '#059669' : '#0F172A' }]} />
-              <Text style={styles.selectedMonthName}>{selectedMonth.full}</Text>
+      {/* ========================================================== */}
+      {/* 2. GRAPH-BASED MONTHLY SALES (Admin Only - Hidden for Emp)  */}
+      {/* ========================================================== */}
+      {!isEmployee && (
+        <View style={styles.graphCard}>
+          <View style={styles.graphHeaderRow}>
+            <View>
+              <Text style={styles.graphCardTitle}>Monthly Sales Performance</Text>
+              <Text style={styles.graphCardSub}>Interactive revenue graph per month</Text>
             </View>
-            <View style={{ flexDirection: 'row', gap: 14, alignItems: 'center' }}>
-              <Text style={styles.selectedMonthStat}>
-                Sales: <Text style={{ fontWeight: '800', color: '#0F172A' }}>Rs {selectedMonth.revenue.toLocaleString('en-IN')}</Text>
-              </Text>
-              <Text style={styles.selectedMonthStat}>
-                Margin: <Text style={{ fontWeight: '800', color: '#059669' }}>+Rs {selectedMonth.margin.toLocaleString('en-IN')}</Text>
-              </Text>
+            <View style={styles.graphBadge}>
+              <Ionicons name="bar-chart" size={14} color="#059669" />
+              <Text style={styles.graphBadgeText}>Full Year Trend</Text>
             </View>
           </View>
-        )}
-      </View>
+
+          {/* Highlight Banner: IN WHICH MONTH MOST SALES WAS DONE */}
+          {peakMonth && peakMonth.revenue > 0 ? (
+            <View style={styles.peakMonthBanner}>
+              <View style={styles.trophyCircle}>
+                <Ionicons name="trophy" size={20} color="#D97706" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Text style={styles.peakMonthTitle}>Top Sales Month: {peakMonth.full}</Text>
+                  <View style={styles.championBadge}>
+                    <Text style={styles.championBadgeText}>PEAK</Text>
+                  </View>
+                </View>
+                <Text style={styles.peakMonthDesc}>
+                  Highest revenue generated: <Text style={{ fontWeight: '800', color: '#0F172A' }}>Rs {peakMonth.revenue.toLocaleString('en-IN')}</Text> across {peakMonth.count} sales.
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <View style={[styles.peakMonthBanner, { backgroundColor: '#F8FAFC', borderColor: '#E2E8F0' }]}>
+              <View style={[styles.trophyCircle, { backgroundColor: '#F1F5F9' }]}>
+                <Ionicons name="stats-chart" size={18} color="#64748B" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.peakMonthTitle, { color: '#334155' }]}>No Sales Recorded Yet</Text>
+                <Text style={styles.peakMonthDesc}>
+                  Real sales completed via POS will instantly display here with exact revenue and peak month records.
+                </Text>
+              </View>
+            </View>
+          )}
+
+          {/* Visual Bar Chart */}
+          <View style={styles.chartContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chartBarsScroll}>
+              {monthlyData.map((item, idx) => {
+                const isSelected = selectedMonthIdx === idx;
+                const isPeak = peakMonth && peakMonth.revenue > 0 && peakMonth.index === idx;
+                const barHeightPercent = maxMonthRevenue > 0 && item.revenue > 0 ? (item.revenue / maxMonthRevenue) : 0;
+                const barPixelHeight = item.revenue > 0 ? Math.max(12, Math.round(barHeightPercent * 110)) : 4;
+
+                return (
+                  <TouchableOpacity
+                    key={item.short}
+                    style={styles.barColumn}
+                    onPress={() => setSelectedMonthIdx(idx)}
+                    activeOpacity={0.7}
+                  >
+                    {/* Top indicator on peak */}
+                    {isPeak ? (
+                      <View style={styles.peakStarIcon}>
+                        <Ionicons name="star" size={10} color="#D97706" />
+                      </View>
+                    ) : (
+                      <View style={{ height: 14 }} />
+                    )}
+
+                    {/* Vertical bar column */}
+                    <View style={styles.barTrack}>
+                      <View
+                        style={[
+                          styles.barFill,
+                          { height: barPixelHeight },
+                          item.revenue === 0
+                            ? styles.barFillZero
+                            : isPeak
+                            ? styles.barFillPeak
+                            : styles.barFillNormal,
+                          isSelected && styles.barFillSelected
+                        ]}
+                      />
+                    </View>
+
+                    {/* Month Label */}
+                    <Text style={[styles.barMonthText, isSelected && styles.barMonthTextActive, isPeak && { fontWeight: '800' }]}>
+                      {item.short}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          {/* Selected Month Inspector Details Pill */}
+          {selectedMonth && (
+            <View style={styles.selectedMonthDetails}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={[styles.statusDot, { backgroundColor: peakMonth && peakMonth.index === selectedMonth.index ? '#059669' : '#0F172A' }]} />
+                <Text style={styles.selectedMonthName}>{selectedMonth.full}</Text>
+              </View>
+              <View style={{ flexDirection: 'row', gap: 14, alignItems: 'center' }}>
+                <Text style={styles.selectedMonthStat}>
+                  Sales: <Text style={{ fontWeight: '800', color: '#0F172A' }}>Rs {selectedMonth.revenue.toLocaleString('en-IN')}</Text>
+                </Text>
+                <Text style={styles.selectedMonthStat}>
+                  Margin: <Text style={{ fontWeight: '800', color: '#059669' }}>+Rs {selectedMonth.margin.toLocaleString('en-IN')}</Text>
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
+      )}
 
       {/* ========================================================== */}
       {/* 3. QUICK ACTIONS SHORTCUTS                                  */}
@@ -442,13 +477,15 @@ export default function HomeView({ items = [], transactions = [], user, onNaviga
           <Text style={styles.actionDesc}>Manage stock list</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionBtn} onPress={() => onNavigateTab('finance')} activeOpacity={0.8}>
-          <View style={[styles.actionIcon, { backgroundColor: '#D97706' }]}>
-            <Ionicons name="wallet" size={22} color="#FFFFFF" />
-          </View>
-          <Text style={styles.actionTitle}>Finance</Text>
-          <Text style={styles.actionDesc}>Profits & receipts</Text>
-        </TouchableOpacity>
+        {!isEmployee && (
+          <TouchableOpacity style={styles.actionBtn} onPress={() => onNavigateTab('finance')} activeOpacity={0.8}>
+            <View style={[styles.actionIcon, { backgroundColor: '#D97706' }]}>
+              <Ionicons name="wallet" size={22} color="#FFFFFF" />
+            </View>
+            <Text style={styles.actionTitle}>Finance</Text>
+            <Text style={styles.actionDesc}>Profits & receipts</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </ScrollView>
   );
@@ -851,5 +888,47 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#64748B',
     marginTop: 2,
+  },
+  staffTerminalCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#CCFBF1',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  staffTerminalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 10,
+  },
+  staffTerminalIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#CCFBF1',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  staffTerminalTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  staffTerminalSub: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  staffTerminalNotice: {
+    fontSize: 13,
+    color: '#475569',
+    lineHeight: 19,
   },
 });

@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function StatsOverview({ stats, items, onFilterSelect, activeFilter }) {
+export default function StatsOverview({ stats, items, onFilterSelect, activeFilter, isEmployee = false }) {
   const totalItems = items.length;
   const totalUnits = items.reduce((acc, it) => acc + (parseInt(it.quantity, 10) || 0), 0);
   const totalValuation = items.reduce((acc, it) => {
@@ -27,17 +27,30 @@ export default function StatsOverview({ stats, items, onFilterSelect, activeFilt
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Total Value */}
-        <View style={[styles.card, styles.valueCard]}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardLabel}>Total Stock Value</Text>
-            <View style={[styles.iconWrap, { backgroundColor: '#ECFDF5' }]}>
-              <Ionicons name="cash-outline" size={16} color="#059669" />
+        {/* Total Value (Admin only) / Total Units (Staff) */}
+        {!isEmployee ? (
+          <View style={[styles.card, styles.valueCard]}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardLabel}>Total Stock Value</Text>
+              <View style={[styles.iconWrap, { backgroundColor: '#ECFDF5' }]}>
+                <Ionicons name="cash-outline" size={16} color="#059669" />
+              </View>
             </View>
+            <Text style={[styles.cardValue, { color: '#059669' }]}>Rs {totalValuation.toLocaleString('en-IN')}</Text>
+            <Text style={styles.subText}>{totalUnits} Total Units in Stock</Text>
           </View>
-          <Text style={[styles.cardValue, { color: '#059669' }]}>Rs {totalValuation.toLocaleString('en-IN')}</Text>
-          <Text style={styles.subText}>{totalUnits} Total Units in Stock</Text>
-        </View>
+        ) : (
+          <View style={[styles.card, { borderColor: '#E2E8F0' }]}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardLabel}>Total Stock Units</Text>
+              <View style={[styles.iconWrap, { backgroundColor: '#F0FDFA' }]}>
+                <Ionicons name="cube-outline" size={16} color="#0F766E" />
+              </View>
+            </View>
+            <Text style={[styles.cardValue, { color: '#0F766E' }]}>{totalUnits}</Text>
+            <Text style={styles.subText}>Units in Warehouse</Text>
+          </View>
+        )}
 
         {/* All Items Filter Card */}
         <TouchableOpacity 

@@ -466,6 +466,7 @@ const DEFAULT_CATEGORIES = [
                   items={items}
                   onFilterSelect={setActiveFilter}
                   activeFilter={activeFilter}
+                  isEmployee={currentUser?.role === 'employee'}
                 />
 
                 {/* Category Horizontal Pills */}
@@ -583,7 +584,7 @@ const DEFAULT_CATEGORIES = [
             user={currentUser}
             onRecordSale={handleRecordSale}
           />
-        ) : activeTab === 'finance' ? (
+        ) : activeTab === 'finance' && currentUser?.role !== 'employee' ? (
           <FinanceView
             items={items}
             transactions={transactions}
@@ -644,18 +645,20 @@ const DEFAULT_CATEGORIES = [
           <Text style={[styles.navLabel, activeTab === 'pos' && styles.navLabelActive]}>POS/Sales</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.navTab, activeTab === 'finance' && styles.navTabActive]}
-          onPress={() => setActiveTab('finance')}
-          activeOpacity={0.7}
-        >
-          <Ionicons
-            name={activeTab === 'finance' ? 'wallet' : 'wallet-outline'}
-            size={22}
-            color={activeTab === 'finance' ? '#0F172A' : '#94A3B8'}
-          />
-          <Text style={[styles.navLabel, activeTab === 'finance' && styles.navLabelActive]}>Finance</Text>
-        </TouchableOpacity>
+        {currentUser?.role !== 'employee' && (
+          <TouchableOpacity
+            style={[styles.navTab, activeTab === 'finance' && styles.navTabActive]}
+            onPress={() => setActiveTab('finance')}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={activeTab === 'finance' ? 'wallet' : 'wallet-outline'}
+              size={22}
+              color={activeTab === 'finance' ? '#0F172A' : '#94A3B8'}
+            />
+            <Text style={[styles.navLabel, activeTab === 'finance' && styles.navLabelActive]}>Finance</Text>
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           style={[styles.navTab, activeTab === 'account' && styles.navTabActive]}
